@@ -5,15 +5,20 @@ import stripe
 from flask_cors import CORS
 from models import db  # Import the db from model.py
 from chatbot import get_chatbot_response
+from dotenv import load_dotenv
+import os
 
+
+load_dotenv()
 
 app = Flask(__name__)
-app.config['BABEL_DEFAULT_LOCALE'] = 'en'
-app.config['SECRET_KEY'] = '***REMOVED***'
-app.config['SQLALCHEMY_DATABASE_URI'] = '***REMOVED***'   #try to host a postgresql databse for better and fast response
-app.config['STRIPE_PUBLIC_KEY'] = '***REMOVED***'
-app.config['STRIPE_SECRET_KEY'] = '***REMOVED***'
 
+# Use environment variables
+app.config['BABEL_DEFAULT_LOCALE'] = os.getenv('BABEL_DEFAULT_LOCALE')
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI')
+app.config['STRIPE_PUBLIC_KEY'] = os.getenv('STRIPE_PUBLIC_KEY')
+app.config['STRIPE_SECRET_KEY'] = os.getenv('STRIPE_SECRET_KEY')
 # Initialize the app with the db
 db.init_app(app)
 
