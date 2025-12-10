@@ -15,3 +15,5 @@ WTForms
 model-viewer  
 flask_babel
 pymysql
+python-dotenv
+
