@@ -13,7 +13,12 @@
                 <h2>Join MuseumHub</h2>
                 <p>Create your account to start exploring</p>
             </div>
-            <form method="post" class="auth-form">
+            {% if error %}
+            <div class="error-message">
+                <i class="fas fa-exclamation-circle"></i> {{ error }}
+            </div>
+            {% endif %}
+            <form method="post" class="auth-form" onsubmit="return validateForm()">
                 <div class="form-group">
                     <div class="input-wrapper">
                         <i class="fas fa-user input-icon"></i>
@@ -31,7 +36,7 @@
                 <div class="form-group">
                     <div class="input-wrapper">
                         <i class="fas fa-lock input-icon"></i>
-                        <input type="password" id="password" name="password" class="form-input" placeholder="Password" required>
+                        <input type="password" id="password" name="password" class="form-input" placeholder="Password" required minlength="6">
                         <div class="input-line"></div>
                     </div>
                 </div>
@@ -73,4 +78,22 @@
         </div>
     </div>
 </div>
+<script>
+function validateForm() {
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirm_password').value;
+    
+    if (password !== confirmPassword) {
+        alert('Passwords do not match!');
+        return false;
+    }
+    
+    if (password.length < 6) {
+        alert('Password must be at least 6 characters long!');
+        return false;
+    }
+    
+    return true;
+}
+</script>
 {% endblock %}

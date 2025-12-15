@@ -172,6 +172,64 @@ body::before {
 }
 
 /* Simplified flat authentication box styles */
+/* Error Message Styles */
+.error-message {
+    background: rgba(255, 0, 0, 0.2);
+    border: 1px solid rgba(255, 0, 0, 0.5);
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    color: #ffcccc;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    animation: slideDown 0.3s ease-out;
+}
+
+.error-message i {
+    color: #ff0000;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Error Message Styles */
+.error-message {
+    background: rgba(255, 0, 0, 0.2);
+    border: 1px solid rgba(255, 0, 0, 0.5);
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    color: #ffcccc;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    animation: slideDown 0.3s ease-out;
+}
+
+.error-message i {
+    color: #ff0000;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 .auth-container {
     display: flex;
     justify-content: center;
@@ -867,6 +925,438 @@ body::before {
     box-shadow: 0 8px 25px rgba(255, 0, 255, 0.5);
 }
 
+/* Floating Chatbot Widget */
+.chatbot-widget {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+/* Floating Chatbot Button (the circular button) */
+#chatbot-button {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, #0066ff, #0052cc);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 5px 20px rgba(0, 102, 255, 0.4);
+    transition: all 0.3s ease;
+    position: relative;
+    font-size: 24px;
+    border: none;
+}
+
+#chatbot-button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 8px 30px rgba(0, 102, 255, 0.6);
+}
+
+.chatbot-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #ff0000;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+.chatbot-window {
+    position: absolute;
+    bottom: 80px;
+    right: 0;
+    width: 350px;
+    height: 500px;
+    background: #1a1a2e;
+    border: 2px solid #0066ff;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.chatbot-header {
+    padding: 1rem;
+    border-bottom: 2px solid #0066ff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 20px 20px 0 0;
+    background: #16213e;
+}
+
+.chatbot-header h3 {
+    margin: 0;
+    font-size: 1rem;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.chatbot-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.chatbot-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: rotate(90deg);
+}
+
+.chatbot-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    background: #1a1a2e;
+}
+
+.chatbot-messages .message {
+    padding: 0.75rem 1rem;
+    border-radius: 15px;
+    max-width: 85%;
+    word-wrap: break-word;
+    animation: messageSlide 0.3s ease-out;
+    line-height: 1.5;
+}
+
+.chatbot-messages .message.user {
+    background: linear-gradient(45deg, #0066ff, #0052cc);
+    margin-left: auto;
+    box-shadow: 0 5px 15px rgba(0, 102, 255, 0.3);
+    color: white;
+}
+
+.chatbot-messages .message.bot {
+    background: #16213e;
+    border: 1px solid #0066ff;
+    box-shadow: 0 5px 15px rgba(0, 102, 255, 0.2);
+    color: #ffffff;
+}
+
+.chatbot-messages .message.typing {
+    background: #16213e;
+    border: 1px solid rgba(0, 102, 255, 0.3);
+    color: #ffffff;
+    font-style: italic;
+}
+
+.chatbot-messages .message.error {
+    background: rgba(255, 0, 0, 0.3);
+    color: white;
+}
+
+/* Chatbot Interactive Buttons */
+.chatbot-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.chatbot-button {
+    padding: 0.75rem 1.25rem;
+    background: linear-gradient(45deg, rgba(0, 102, 255, 0.3), rgba(0, 82, 204, 0.3));
+    border: 2px solid rgba(0, 102, 255, 0.5);
+    border-radius: 12px;
+    color: white;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 15px rgba(0, 102, 255, 0.2);
+}
+
+.chatbot-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s ease;
+}
+
+.chatbot-button:hover {
+    background: linear-gradient(45deg, rgba(0, 102, 255, 0.5), rgba(0, 82, 204, 0.5));
+    border-color: rgba(0, 102, 255, 0.8);
+    transform: translateX(5px) scale(1.02);
+    box-shadow: 0 6px 20px rgba(0, 102, 255, 0.4);
+}
+
+.chatbot-button:hover::before {
+    left: 100%;
+}
+
+.chatbot-button:active {
+    transform: translateX(3px) scale(0.98);
+}
+
+/* Button styles for different actions */
+.chatbot-button[data-action="start_booking"],
+.chatbot-button[data-action="confirm_and_pay"] {
+    background: linear-gradient(45deg, #0066ff, #0052cc);
+    border-color: #0066ff;
+    font-weight: 700;
+    text-align: center;
+}
+
+.chatbot-button[data-action="select_date"],
+.chatbot-button[data-action="select_time"],
+.chatbot-button[data-action="select_visitors"] {
+    background: #16213e;
+    border-color: #0066ff;
+    color: #ffffff;
+}
+
+.chatbot-button[data-payment-type="online"] {
+    background: linear-gradient(45deg, #00ff00, #32cd32);
+    border-color: #00ff00;
+}
+
+.chatbot-button[data-payment-type="cash"] {
+    background: linear-gradient(45deg, #ffa500, #ff8c00);
+    border-color: #ffa500;
+}
+
+/* Suggestion buttons (lighter style) */
+.chatbot-buttons.suggestions .chatbot-button {
+    background: #16213e;
+    border: 1px solid #0066ff;
+    font-size: 0.85rem;
+    padding: 0.6rem 1rem;
+    color: #ffffff;
+}
+
+.chatbot-buttons.suggestions .chatbot-button:hover {
+    background: #1a1a2e;
+    border-color: #0080ff;
+    color: #ffffff;
+}
+
+/* Quick action buttons */
+.chatbot-buttons.quick-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 0.5rem;
+}
+
+.chatbot-buttons.quick-actions .chatbot-button {
+    font-size: 0.8rem;
+    padding: 0.6rem 0.8rem;
+    text-align: center;
+}
+
+/* Message with buttons styling */
+.message.bot .chatbot-buttons {
+    animation: slideInButtons 0.4s ease-out;
+}
+
+@keyframes slideInButtons {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Enhanced message styling for booking flow */
+.message.bot.booking-step {
+    background: #16213e;
+    border-left: 4px solid #0066ff;
+    color: #ffffff;
+}
+
+.message.bot.booking-confirmation {
+    background: rgba(0, 255, 0, 0.15);
+    border-left: 4px solid #00ff00;
+}
+
+.message.bot.booking-error {
+    background: rgba(255, 0, 0, 0.15);
+    border-left: 4px solid #ff0000;
+}
+
+.chatbot-input-form {
+    display: flex;
+    gap: 0.5rem;
+    padding: 1rem;
+    border-top: 2px solid #0066ff;
+    background: #16213e;
+    border-radius: 0 0 20px 20px;
+}
+
+.chatbot-voice-btn {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: #16213e;
+    color: white;
+    border: 2px solid #0066ff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.chatbot-voice-btn:hover {
+    background: #1a1a2e;
+    border-color: #0080ff;
+    transform: scale(1.1);
+}
+
+.chatbot-voice-btn.recording {
+    background: linear-gradient(45deg, #ff0000, #ff6666);
+    animation: voicePulse 1s infinite;
+    border-color: #ff0000;
+}
+
+@keyframes voicePulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.7;
+        transform: scale(1.1);
+    }
+}
+
+.voice-recording-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: rgba(255, 0, 0, 0.2);
+    color: #ffcccc;
+    font-size: 0.85rem;
+    border-top: 1px solid rgba(255, 0, 0, 0.3);
+}
+
+.pulse-dot {
+    width: 10px;
+    height: 10px;
+    background: #ff0000;
+    border-radius: 50%;
+    animation: voicePulse 1s infinite;
+}
+
+.chatbot-input-form input {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: 2px solid #0066ff;
+    border-radius: 25px;
+    background: #1a1a2e;
+    color: #ffffff;
+    font-size: 0.9rem;
+}
+
+.chatbot-input-form input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.chatbot-input-form input:focus {
+    outline: none;
+    border-color: #0066ff;
+    background: #1a1a2e;
+    box-shadow: 0 0 10px rgba(0, 102, 255, 0.5);
+}
+
+.chatbot-send-btn {
+    width: 45px;
+    height: 45px;
+    border: none;
+    border-radius: 50%;
+    background: linear-gradient(45deg, #0066ff, #0052cc);
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0, 102, 255, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.chatbot-send-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 8px 25px rgba(0, 102, 255, 0.5);
+}
+
+.message.user.voice {
+    background: linear-gradient(45deg, #00ffff, #00ccff);
+    border-left: 3px solid #00ffff;
+}
+
+.message.bot.error {
+    background: rgba(255, 0, 0, 0.2);
+    border-left: 3px solid #ff0000;
+    color: #ffcccc;
+}
+
+/* Responsive design for chatbot widget */
+@media (max-width: 768px) {
+    .chatbot-window {
+        width: calc(100vw - 40px);
+        height: calc(100vh - 120px);
+        right: 20px;
+        left: 20px;
+        bottom: 80px;
+    }
+}
+
 /* Modern Footer with Enhanced Design */
 .modern-footer {
     background: rgba(0, 0, 0, 0.3);
@@ -1044,4 +1534,84 @@ body::before {
 
 ::-webkit-scrollbar-thumb:hover {
     background: linear-gradient(45deg, #ff69b4, #ff00ff);
+}
+
+
+/* Page Header and Container Styles */
+.modern-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    padding-top: 100px; /* Account for fixed nav */
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding: 2rem 0;
+}
+
+.page-header h1 {
+    font-size: 3rem;
+    color: white;
+    margin-bottom: 1rem;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.page-header h1 i {
+    color: #0066ff;
+    animation: glow 2s ease-in-out infinite alternate;
+}
+
+.page-header p {
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* Modern Button Styles */
+.modern-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 25px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    color: white;
+}
+
+.modern-btn.primary {
+    background: linear-gradient(135deg, #ff00ff, #00ffff);
+    box-shadow: 0 5px 20px rgba(255, 0, 255, 0.4);
+}
+
+.modern-btn.primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(255, 0, 255, 0.6);
+}
+
+.modern-btn.secondary {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.modern-btn.secondary:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.modern-btn.danger {
+    background: rgba(255, 0, 0, 0.3);
+    border: 1px solid rgba(255, 0, 0, 0.5);
+}
+
+.modern-btn.danger:hover {
+    background: rgba(255, 0, 0, 0.5);
 }

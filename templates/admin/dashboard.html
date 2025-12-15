@@ -1,0 +1,115 @@
+{% extends "admin/base.html" %}
+
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="modern-container">
+    <div class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+        <div class="modern-card">
+            <h3><i class="fas fa-comments"></i> Total Conversations</h3>
+            <p style="font-size: 2rem; font-weight: bold; color: #ff00ff;">{{ conversation_metrics.total_sessions }}</p>
+            <small>Active: {{ conversation_metrics.active_sessions }}</small>
+        </div>
+        <div class="modern-card">
+            <h3><i class="fas fa-ticket-alt"></i> Total Bookings</h3>
+            <p style="font-size: 2rem; font-weight: bold; color: #00ff00;">{{ booking_metrics.total_bookings }}</p>
+            <small>Success Rate: {{ booking_metrics.success_rate }}%</small>
+        </div>
+        <div class="modern-card">
+            <h3><i class="fas fa-percentage"></i> Conversion Rate</h3>
+            <p style="font-size: 2rem; font-weight: bold; color: #ffa500;">{{ booking_metrics.conversion_rate }}%</p>
+            <small>Conversations → Bookings</small>
+        </div>
+        <div class="modern-card">
+            <h3><i class="fas fa-clock"></i> Avg Session Duration</h3>
+            <p style="font-size: 2rem; font-weight: bold; color: #00bfff;">{{ "%.1f"|format(conversation_metrics.avg_session_duration_seconds / 60) }} min</p>
+            <small>Average time per conversation</small>
+        </div>
+    </div>
+    
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+        <div class="modern-card">
+            <h3><i class="fas fa-exclamation-triangle"></i> Recent Escalations</h3>
+            {% if recent_escalations %}
+            <table style="width: 100%; margin-top: 1rem;">
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Severity</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for escalation in recent_escalations %}
+                    <tr>
+                        <td>{{ escalation.type }}</td>
+                        <td><span class="badge badge-{{ escalation.severity }}">{{ escalation.severity }}</span></td>
+                        <td>{{ escalation.status }}</td>
+                        <td>{{ escalation.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>No recent escalations</p>
+            {% endif %}
+        </div>
+        
+        <div class="modern-card">
+            <h3><i class="fas fa-ticket-alt"></i> Recent Bookings</h3>
+            {% if recent_bookings %}
+            <table style="width: 100%; margin-top: 1rem;">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Date</th>
+                        <th>Visitors</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in recent_bookings %}
+                    <tr>
+                        <td>#{{ booking.id }}</td>
+                        <td>{{ booking.date.strftime('%Y-%m-%d') }}</td>
+                        <td>{{ booking.visitors }}</td>
+                        <td><span class="badge badge-{{ booking.payment_status }}">{{ booking.payment_status }}</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>No recent bookings</p>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="modern-card">
+        <h3><i class="fas fa-chart-line"></i> Channel Performance</h3>
+        <table style="width: 100%; margin-top: 1rem;">
+            <thead>
+                <tr>
+                    <th>Channel</th>
+                    <th>Type</th>
+                    <th>Sessions</th>
+                    <th>Messages</th>
+                    <th>Avg Messages/Session</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for channel in channel_metrics %}
+                <tr>
+                    <td>{{ channel.channel_name }}</td>
+                    <td>{{ channel.channel_type }}</td>
+                    <td>{{ channel.total_sessions }}</td>
+                    <td>{{ channel.total_messages }}</td>
+                    <td>{{ "%.2f"|format(channel.avg_messages_per_session) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+

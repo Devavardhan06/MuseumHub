@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Booking Calendar</title>
+</head>
+<body>
+
+<h1>Booking Calendar</h1>
+
+<div id="calendar"></div>
+
+<script>
+function renderCalendar() {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth();
+
+    const firstDay = new Date(year, month, 1).getDay();
+    const days = new Date(year, month + 1, 0).getDate();
+
+    let html = "<table border='1'><tr>";
+    const daysName = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+    daysName.forEach(d => html += `<th>${d}</th>`);
+    html += "</tr><tr>";
+
+    for (let i = 0; i < firstDay; i++) html += "<td></td>";
+
+    for (let d = 1; d <= days; d++) {
+        const dateStr = `${year}-${month+1}-${d}`;
+        html += `<td onclick="openDay('${dateStr}')">${d}</td>`;
+        if ((firstDay + d) % 7 === 0) html += "</tr><tr>";
+    }
+
+    html += "</tr></table>";
+    document.getElementById("calendar").innerHTML = html;
+}
+
+function openDay(date) {
+    window.location.href = `/day_view?date=${date}`;
+}
+
+renderCalendar();
+</script>
+
+</body>
+</html>

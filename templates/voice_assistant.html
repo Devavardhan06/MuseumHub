@@ -1,0 +1,481 @@
+{% extends "base.html" %}
+
+{% block title %}Voice Assistant - MuseumHub{% endblock %}
+
+{% block content %}
+<div class="modern-container">
+    <div class="page-header">
+        <h1><i class="fas fa-microphone"></i> Voice Assistant</h1>
+        <p>Interact with MuseumHub using your voice</p>
+    </div>
+
+    <div class="voice-interface">
+        <div class="voice-controls">
+            <div class="voice-button-container">
+                <button id="recordBtn" class="voice-btn">
+                    <i class="fas fa-microphone"></i>
+                    <span>Click to Speak</span>
+                </button>
+                <div id="recordingIndicator" class="recording-indicator" style="display: none;">
+                    <div class="pulse"></div>
+                    <span>Recording...</span>
+                </div>
+            </div>
+
+            <div class="voice-status">
+                <div id="statusMessage" class="status-message">Ready to listen</div>
+            </div>
+        </div>
+
+        <div class="voice-results">
+            <div class="result-card">
+                <h3><i class="fas fa-comment"></i> Your Message</h3>
+                <div id="transcriptionResult" class="transcription-result">
+                    <p class="placeholder">Your spoken message will appear here...</p>
+                </div>
+            </div>
+
+            <div class="result-card">
+                <h3><i class="fas fa-robot"></i> Assistant Response</h3>
+                <div id="assistantResponse" class="assistant-response">
+                    <p class="placeholder">Assistant response will appear here...</p>
+                </div>
+                <audio id="audioPlayer" controls style="display: none; width: 100%; margin-top: 1rem;"></audio>
+            </div>
+        </div>
+    </div>
+
+    <div class="feature-grid">
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-language"></i>
+            </div>
+            <h3>Speech Recognition</h3>
+            <p>Advanced ASR (Automatic Speech Recognition) converts your voice to text in real-time.</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-volume-up"></i>
+            </div>
+            <h3>Text-to-Speech</h3>
+            <p>Hear responses from our AI assistant in natural, human-like voices.</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-brain"></i>
+            </div>
+            <h3>AI Processing</h3>
+            <p>Your voice messages are processed by our intelligent chatbot for booking and information.</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-globe"></i>
+            </div>
+            <h3>Multi-Language</h3>
+            <p>Support for multiple languages including English, French, and more.</p>
+        </div>
+    </div>
+
+    <div class="info-section">
+        <h2>How to Use</h2>
+        <ol class="steps-list">
+            <li>
+                <strong>Click the Microphone Button</strong>
+                <p>Press and hold the microphone button to start recording your voice message.</p>
+            </li>
+            <li>
+                <strong>Speak Your Question</strong>
+                <p>Ask about bookings, exhibits, museum hours, or any other information you need.</p>
+            </li>
+            <li>
+                <strong>Release to Send</strong>
+                <p>Release the button when you're done speaking. Your message will be transcribed and processed.</p>
+            </li>
+            <li>
+                <strong>Listen to Response</strong>
+                <p>Hear the AI assistant's response in audio format, or read it in the text area.</p>
+            </li>
+        </ol>
+    </div>
+</div>
+
+<style>
+.voice-interface {
+    max-width: 800px;
+    margin: 2rem auto;
+}
+
+.voice-controls {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.voice-button-container {
+    margin-bottom: 2rem;
+}
+
+.voice-btn {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ff00ff, #00ffff);
+    border: 4px solid white;
+    color: white;
+    font-size: 2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin: 0 auto;
+    box-shadow: 0 10px 30px rgba(255, 0, 255, 0.5);
+}
+
+.voice-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 15px 40px rgba(255, 0, 255, 0.7);
+}
+
+.voice-btn:active {
+    transform: scale(0.95);
+}
+
+.voice-btn.recording {
+    background: linear-gradient(135deg, #ff0000, #ff6666);
+    animation: pulse 1s infinite;
+}
+
+.voice-btn span {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.recording-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    color: #ff0000;
+    font-weight: 600;
+}
+
+.pulse {
+    width: 12px;
+    height: 12px;
+    background: #ff0000;
+    border-radius: 50%;
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.5;
+        transform: scale(1.2);
+    }
+}
+
+.voice-status {
+    margin-top: 1rem;
+}
+
+.status-message {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.1rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.voice-results {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.result-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 2rem;
+}
+
+.result-card h3 {
+    color: white;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.transcription-result,
+.assistant-response {
+    min-height: 150px;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.6;
+}
+
+.placeholder {
+    color: rgba(255, 255, 255, 0.5);
+    font-style: italic;
+}
+
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin: 3rem 0;
+}
+
+.feature-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 2rem;
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+}
+
+.feature-icon {
+    font-size: 3rem;
+    color: #ff00ff;
+    margin-bottom: 1rem;
+}
+
+.feature-card h3 {
+    color: white;
+    margin-bottom: 1rem;
+}
+
+.feature-card p {
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.6;
+}
+
+.info-section {
+    margin: 3rem 0;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.info-section h2 {
+    color: white;
+    margin-bottom: 1.5rem;
+}
+
+.steps-list {
+    list-style: none;
+    counter-reset: step-counter;
+    padding: 0;
+}
+
+.steps-list li {
+    counter-increment: step-counter;
+    margin-bottom: 2rem;
+    padding-left: 3rem;
+    position: relative;
+}
+
+.steps-list li::before {
+    content: counter(step-counter);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 2rem;
+    height: 2rem;
+    background: linear-gradient(135deg, #ff00ff, #00ffff);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: white;
+}
+
+.steps-list li strong {
+    color: white;
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+}
+
+.steps-list li p {
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .voice-results {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<script>
+let mediaRecorder;
+let audioChunks = [];
+let isRecording = false;
+
+const recordBtn = document.getElementById('recordBtn');
+const recordingIndicator = document.getElementById('recordingIndicator');
+const statusMessage = document.getElementById('statusMessage');
+const transcriptionResult = document.getElementById('transcriptionResult');
+const assistantResponse = document.getElementById('assistantResponse');
+const audioPlayer = document.getElementById('audioPlayer');
+
+recordBtn.addEventListener('mousedown', startRecording);
+recordBtn.addEventListener('mouseup', stopRecording);
+recordBtn.addEventListener('mouseleave', stopRecording);
+
+recordBtn.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    startRecording();
+});
+
+recordBtn.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    stopRecording();
+});
+
+async function startRecording() {
+    if (isRecording) return;
+    
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+        audioChunks = [];
+        
+        mediaRecorder.ondataavailable = (event) => {
+            audioChunks.push(event.data);
+        };
+        
+        mediaRecorder.onstop = async () => {
+            const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+            await processVoiceMessage(audioBlob);
+            stream.getTracks().forEach(track => track.stop());
+        };
+        
+        mediaRecorder.start();
+        isRecording = true;
+        recordBtn.classList.add('recording');
+        recordingIndicator.style.display = 'flex';
+        statusMessage.textContent = 'Recording... Speak now!';
+    } catch (error) {
+        console.error('Error accessing microphone:', error);
+        statusMessage.textContent = 'Error: Could not access microphone. Please check permissions.';
+    }
+}
+
+function stopRecording() {
+    if (!isRecording) return;
+    
+    if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        mediaRecorder.stop();
+    }
+    
+    isRecording = false;
+    recordBtn.classList.remove('recording');
+    recordingIndicator.style.display = 'none';
+    statusMessage.textContent = 'Processing your message...';
+}
+
+async function processVoiceMessage(audioBlob) {
+    const formData = new FormData();
+    formData.append('audio', audioBlob, 'recording.wav');
+    formData.append('language', 'en-US');
+    
+    try {
+        // Transcribe audio
+        const transcribeResponse = await fetch('/api/voice/transcribe', {
+            method: 'POST',
+            body: formData
+        });
+        
+        if (!transcribeResponse.ok) {
+            throw new Error('Transcription failed');
+        }
+        
+        const transcribeData = await transcribeResponse.json();
+        const messageText = transcribeData.text;
+        
+        // Display transcription
+        transcriptionResult.innerHTML = `<p>${messageText}</p>`;
+        
+        // Get chatbot response
+        const chatResponse = await fetch('/api/chat/message', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                message: messageText
+            })
+        });
+        
+        if (!chatResponse.ok) {
+            throw new Error('Chat response failed');
+        }
+        
+        const chatData = await chatResponse.json();
+        const botResponse = chatData.response;
+        
+        // Display assistant response
+        assistantResponse.innerHTML = `<p>${botResponse}</p>`;
+        
+        // Synthesize speech
+        const synthesizeResponse = await fetch('/api/voice/synthesize', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                text: botResponse,
+                language: 'en-US'
+            })
+        });
+        
+        if (synthesizeResponse.ok) {
+            const synthesizeData = await synthesizeResponse.json();
+            const audioData = synthesizeData.audio_data;
+            
+            // Play audio
+            const audioBlob = new Blob([Uint8Array.from(atob(audioData), c => c.charCodeAt(0))], { type: 'audio/mpeg' });
+            const audioUrl = URL.createObjectURL(audioBlob);
+            audioPlayer.src = audioUrl;
+            audioPlayer.style.display = 'block';
+            audioPlayer.play();
+        }
+        
+        statusMessage.textContent = 'Ready to listen';
+    } catch (error) {
+        console.error('Error processing voice message:', error);
+        statusMessage.textContent = 'Error processing message. Please try again.';
+        transcriptionResult.innerHTML = '<p class="placeholder">Error occurred</p>';
+        assistantResponse.innerHTML = '<p class="placeholder">Error occurred</p>';
+    }
+}
+</script>
+{% endblock %}
+

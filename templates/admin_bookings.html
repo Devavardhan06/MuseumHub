@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>Admin - All Bookings</title></head>
+<body>
+    <h1>Admin - Bookings</h1>
+    <form method="get" action="{{ url_for('admin_bookings') }}">
+        <label>Filter by date: <input type="date" name="date"></label>
+        <button type="submit">Filter</button>
+    </form>
+    <table border="1" cellpadding="6" cellspacing="0">
+        <tr><th>ID</th><th>User</th><th>Date</th><th>Slot</th><th>Visitors</th><th>Created</th></tr>
+        {% for b in bookings %}
+            <tr>
+                <td>{{ b.id }}</td>
+                <td>{{ b.user.username if b.user else b.user_id }}</td>
+                <td>{{ b.date }}</td>
+                <td>{{ b.time_slot }}</td>
+                <td>{{ b.visitors }}</td>
+                <td>{{ b.created_at }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

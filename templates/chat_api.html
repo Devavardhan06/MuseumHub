@@ -1,0 +1,393 @@
+{% extends "base.html" %}
+
+{% block title %}Chat API - MuseumHub{% endblock %}
+
+{% block content %}
+<div class="modern-container">
+    <div class="page-header">
+        <h1><i class="fas fa-comments"></i> Chat API Management</h1>
+        <p>Manage your chat sessions and API tokens</p>
+    </div>
+
+    <div class="api-dashboard">
+        <div class="api-stats">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-comments"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="sessionCount">0</h3>
+                    <p>Active Sessions</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-key"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="tokenCount">0</h3>
+                    <p>API Tokens</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-exchange-alt"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="messageCount">0</h3>
+                    <p>Messages Today</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="api-sections">
+            <div class="api-section">
+                <h2><i class="fas fa-key"></i> API Tokens</h2>
+                <p>Generate authentication tokens for API access</p>
+                
+                <div class="token-form">
+                    <input type="text" id="tokenName" placeholder="Token name (optional)" class="modern-input">
+                    <input type="number" id="tokenExpires" placeholder="Expires in days (default: 30)" class="modern-input" value="30">
+                    <button onclick="createToken()" class="modern-btn primary">
+                        <i class="fas fa-plus"></i> Create Token
+                    </button>
+                </div>
+
+                <div id="tokenList" class="token-list">
+                    <p class="loading">Loading tokens...</p>
+                </div>
+            </div>
+
+            <div class="api-section">
+                <h2><i class="fas fa-history"></i> Chat Sessions</h2>
+                <p>View and manage your chat conversation sessions</p>
+                
+                <div id="sessionList" class="session-list">
+                    <p class="loading">Loading sessions...</p>
+                </div>
+            </div>
+
+            <div class="api-section">
+                <h2><i class="fas fa-code"></i> API Documentation</h2>
+                <div class="api-docs">
+                    <h3>Send Chat Message</h3>
+                    <div class="code-block">
+                        <pre><code>POST /api/chat/message
+Content-Type: application/json
+
+{
+  "message": "Hello, I want to book a ticket",
+  "session_id": "optional-session-id"
+}</code></pre>
+                    </div>
+
+                    <h3>Create Session</h3>
+                    <div class="code-block">
+                        <pre><code>POST /api/chat/session
+Authorization: Bearer YOUR_TOKEN</code></pre>
+                    </div>
+
+                    <h3>Get Chat History</h3>
+                    <div class="code-block">
+                        <pre><code>GET /api/chat/session/{session_id}/history
+Authorization: Bearer YOUR_TOKEN</code></pre>
+                    </div>
+
+                    <h3>WebSocket Connection</h3>
+                    <div class="code-block">
+                        <pre><code>Connect to: ws://127.0.0.1:5001
+Events:
+  - connect: Connect with token
+  - chat_message: Send message
+  - bot_response: Receive response</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.api-dashboard {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.api-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+}
+
+.stat-card {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 20px;
+    padding: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    transition: transform 0.3s ease;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+}
+
+.stat-icon {
+    font-size: 3rem;
+    color: #0066ff;
+}
+
+.stat-info h3 {
+    color: white;
+    font-size: 2rem;
+    margin: 0;
+}
+
+.stat-info p {
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0.5rem 0 0 0;
+}
+
+.api-sections {
+    display: grid;
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.api-section {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.api-section h2 {
+    color: white;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.api-section > p {
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 1.5rem;
+}
+
+.token-form {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.modern-input {
+    flex: 1;
+    min-width: 200px;
+    padding: 0.75rem 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    color: white;
+    font-size: 1rem;
+}
+
+.modern-input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.token-list,
+.session-list {
+    margin-top: 1rem;
+}
+
+.token-item,
+.session-item {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.token-item code,
+.session-item code {
+    color: #00ffff;
+    font-family: 'Courier New', monospace;
+    word-break: break-all;
+    flex: 1;
+}
+
+.token-actions,
+.session-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-small {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+}
+
+.loading {
+    color: rgba(255, 255, 255, 0.5);
+    text-align: center;
+    padding: 2rem;
+}
+
+.api-docs h3 {
+    color: white;
+    margin-top: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.code-block {
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    overflow-x: auto;
+}
+
+.code-block pre {
+    margin: 0;
+    color: #00ffff;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+</style>
+
+<script>
+// Load tokens and sessions on page load
+document.addEventListener('DOMContentLoaded', function() {
+    loadTokens();
+    loadSessions();
+    loadStats();
+});
+
+async function createToken() {
+    const name = document.getElementById('tokenName').value;
+    const expires = parseInt(document.getElementById('tokenExpires').value) || 30;
+    
+    try {
+        const response = await fetch('/api/tokens', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                name: name || 'API Token',
+                expires_days: expires
+            })
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            alert('Token created: ' + data.token);
+            document.getElementById('tokenName').value = '';
+            loadTokens();
+            loadStats();
+        } else {
+            const error = await response.json();
+            alert('Error: ' + error.error);
+        }
+    } catch (error) {
+        alert('Error creating token: ' + error.message);
+    }
+}
+
+async function loadTokens() {
+    try {
+        const response = await fetch('/api/tokens');
+        if (response.ok) {
+            const data = await response.json();
+            const tokenList = document.getElementById('tokenList');
+            
+            if (data.tokens && data.tokens.length > 0) {
+                tokenList.innerHTML = data.tokens.map(token => `
+                    <div class="token-item">
+                        <div>
+                            <strong>${token.name || 'Unnamed Token'}</strong><br>
+                            <small>Created: ${new Date(token.created_at).toLocaleDateString()}</small>
+                            ${token.expires_at ? `<br><small>Expires: ${new Date(token.expires_at).toLocaleDateString()}</small>` : ''}
+                        </div>
+                        <div class="token-actions">
+                            <button onclick="copyToken('${token.id}')" class="modern-btn secondary btn-small">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                            <button onclick="revokeToken(${token.id})" class="modern-btn danger btn-small">
+                                <i class="fas fa-trash"></i> Revoke
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                tokenList.innerHTML = '<div class="empty-state">No tokens created yet</div>';
+            }
+        } else {
+            document.getElementById('tokenList').innerHTML = '<div class="empty-state">Error loading tokens</div>';
+        }
+    } catch (error) {
+        document.getElementById('tokenList').innerHTML = '<div class="empty-state">Error loading tokens</div>';
+    }
+}
+
+async function revokeToken(tokenId) {
+    if (!confirm('Are you sure you want to revoke this token?')) return;
+    
+    try {
+        const response = await fetch(`/api/tokens/${tokenId}`, {
+            method: 'DELETE'
+        });
+        
+        if (response.ok) {
+            loadTokens();
+            loadStats();
+        } else {
+            alert('Error revoking token');
+        }
+    } catch (error) {
+        alert('Error: ' + error.message);
+    }
+}
+
+async function loadSessions() {
+    // This would require backend support
+    document.getElementById('sessionList').innerHTML = '<div class="empty-state">Session management coming soon</div>';
+}
+
+async function loadStats() {
+    // Update stats
+    try {
+        const tokenResponse = await fetch('/api/tokens');
+        if (tokenResponse.ok) {
+            const tokenData = await tokenResponse.json();
+            document.getElementById('tokenCount').textContent = tokenData.tokens ? tokenData.tokens.length : 0;
+        }
+    } catch (error) {
+        console.error('Error loading stats:', error);
+    }
+}
+</script>
+{% endblock %}
+

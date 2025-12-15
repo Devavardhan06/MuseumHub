@@ -1,0 +1,259 @@
+{% extends "base.html" %}
+
+{% block title %}Instagram Integration - MuseumHub{% endblock %}
+
+{% block content %}
+<div class="modern-container">
+    <div class="page-header">
+        <h1><i class="fab fa-instagram"></i> Instagram Integration</h1>
+        <p>Connect with MuseumHub via Instagram Direct Messages</p>
+    </div>
+
+    <div class="feature-grid">
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fab fa-instagram"></i>
+            </div>
+            <h3>Instagram DM Support</h3>
+            <p>Receive and respond to customer inquiries directly through Instagram Direct Messages.</p>
+            <div class="status-badge active">
+                <i class="fas fa-check-circle"></i> Active
+            </div>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-robot"></i>
+            </div>
+            <h3>AI-Powered Responses</h3>
+            <p>Our chatbot automatically responds to Instagram messages with helpful information about bookings and exhibits.</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-link"></i>
+            </div>
+            <h3>Webhook Integration</h3>
+            <p>Real-time message processing via Meta API webhooks.</p>
+            <div class="info-box">
+                <strong>Webhook URL:</strong><br>
+                <code>http://127.0.0.1:5001/api/instagram/webhook</code>
+            </div>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-cog"></i>
+            </div>
+            <h3>Configuration</h3>
+            <p>Set up your Instagram integration in the Admin Portal.</p>
+            {% if session.get('is_admin', False) %}
+                <a href="{{ url_for('admin_portal_page') }}" class="modern-btn primary">
+                    <i class="fas fa-cog"></i> Configure
+                </a>
+            {% else %}
+                <p class="text-muted">Admin access required</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="info-section">
+        <h2>How It Works</h2>
+        <ol class="steps-list">
+            <li>
+                <strong>Connect Instagram Account</strong>
+                <p>Link your Instagram business account to MuseumHub through Meta API.</p>
+            </li>
+            <li>
+                <strong>Receive Messages</strong>
+                <p>When customers send DMs to your Instagram account, they're automatically received by our system.</p>
+            </li>
+            <li>
+                <strong>AI Response</strong>
+                <p>Our chatbot processes the message and provides helpful responses about bookings, exhibits, and museum information.</p>
+            </li>
+            <li>
+                <strong>Manage Conversations</strong>
+                <p>View and manage all Instagram conversations from the Admin Portal.</p>
+            </li>
+        </ol>
+    </div>
+
+    <div class="action-section">
+        <h2>Get Started</h2>
+        <p>To enable Instagram integration, you need to:</p>
+        <ul>
+            <li>Have an Instagram Business Account</li>
+            <li>Set up Meta API credentials</li>
+            <li>Configure webhook in Meta Developer Console</li>
+            <li>Enable the integration in Admin Portal</li>
+        </ul>
+        {% if session.get('is_admin', False) %}
+            <a href="{{ url_for('admin_portal_page') }}" class="modern-btn primary large">
+                <i class="fas fa-rocket"></i> Set Up Instagram Integration
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+}
+
+.feature-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 2rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(255, 0, 255, 0.3);
+}
+
+.feature-icon {
+    font-size: 3rem;
+    color: #ff00ff;
+    margin-bottom: 1rem;
+}
+
+.feature-card h3 {
+    color: white;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+}
+
+.feature-card p {
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    margin-top: 1rem;
+}
+
+.status-badge.active {
+    background: rgba(0, 255, 0, 0.2);
+    color: #00ff00;
+    border: 1px solid rgba(0, 255, 0, 0.5);
+}
+
+.info-box {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 1rem;
+    border-radius: 10px;
+    margin-top: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.info-box code {
+    color: #00ffff;
+    font-family: 'Courier New', monospace;
+    word-break: break-all;
+}
+
+.info-section {
+    margin: 3rem 0;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.info-section h2 {
+    color: white;
+    margin-bottom: 1.5rem;
+}
+
+.steps-list {
+    list-style: none;
+    counter-reset: step-counter;
+    padding: 0;
+}
+
+.steps-list li {
+    counter-increment: step-counter;
+    margin-bottom: 2rem;
+    padding-left: 3rem;
+    position: relative;
+}
+
+.steps-list li::before {
+    content: counter(step-counter);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 2rem;
+    height: 2rem;
+    background: linear-gradient(135deg, #ff00ff, #00ffff);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: white;
+}
+
+.steps-list li strong {
+    color: white;
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+}
+
+.steps-list li p {
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0;
+}
+
+.action-section {
+    margin: 3rem 0;
+    padding: 2rem;
+    background: linear-gradient(135deg, rgba(255, 0, 255, 0.2), rgba(0, 255, 255, 0.2));
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    text-align: center;
+}
+
+.action-section h2 {
+    color: white;
+    margin-bottom: 1rem;
+}
+
+.action-section p {
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 1rem;
+}
+
+.action-section ul {
+    text-align: left;
+    display: inline-block;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 2rem;
+}
+
+.action-section li {
+    margin-bottom: 0.5rem;
+}
+
+.modern-btn.large {
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+}
+</style>
+{% endblock %}
+

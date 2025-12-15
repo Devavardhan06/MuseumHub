@@ -16,4 +16,14 @@ model-viewer
 flask_babel
 pymysql
 python-dotenv
+flask-socketio
+requests
+cryptography
+python-jose[cryptography]
+bcrypt
+google-cloud-speech
+google-cloud-texttospeech
+boto3
+redis
+celery
 

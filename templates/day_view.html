@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+
+{% block title %}Available Slots - MuseumHub{% endblock %}
+
+{% block content %}
+<div class="modern-container">
+    <div class="page-header">
+        <h2><i class="fas fa-clock"></i> Available Slots for {{ date }}</h2>
+        <p class="subtitle">Select a time slot to book your visit</p>
+    </div>
+
+    <div class="back-link">
+        <a href="{{ url_for('calendar_page') }}" class="modern-btn secondary">
+            <i class="fas fa-arrow-left"></i> Back to Calendar
+        </a>
+    </div>
+
+    <div class="slots-container">
+        {% for s in slots %}
+        <div class="slot-card {% if s.is_full %}slot-full{% else %}slot-available{% endif %}">
+            <div class="slot-header">
+                <div class="slot-time">
+                    <i class="fas fa-clock"></i>
+                    <h3>{{ s.time_slot }}</h3>
+                </div>
+                <div class="slot-status">
+                    {% if s.is_full %}
+                        <span class="status-badge full">
+                            <i class="fas fa-times-circle"></i> Full
+                        </span>
+                    {% else %}
+                        <span class="status-badge available">
+                            <i class="fas fa-check-circle"></i> Available
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="slot-details">
+                <div class="detail-item">
+                    <i class="fas fa-users"></i>
+                    <span>Booked: <strong>{{ s.booked }}</strong> / {{ s.capacity }}</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-ticket-alt"></i>
+                    <span>Remaining: <strong>{{ s.remaining }}</strong> spots</span>
+                </div>
+            </div>
+
+            {% if not s.is_full %}
+            <div class="slot-action">
+                <form method="get" action="{{ url_for('book_ticket') }}" style="display: inline;">
+                    <input type="hidden" name="date" value="{{ date }}">
+                    <input type="hidden" name="time_slot" value="{{ s.time_slot }}">
+                    <button type="submit" class="modern-btn primary">
+                        <i class="fas fa-calendar-check"></i> Book This Slot
+                    </button>
+                </form>
+            </div>
+            {% else %}
+            <div class="slot-action">
+                <button class="modern-btn disabled" disabled>
+                    <i class="fas fa-ban"></i> Slot Full
+                </button>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+.modern-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.page-header h2 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.subtitle {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.1rem;
+}
+
+.back-link {
+    margin-bottom: 2rem;
+}
+
+.slots-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.slot-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 2rem;
+    transition: all 0.3s ease;
+}
+
+.slot-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(255, 0, 255, 0.3);
+}
+
+.slot-card.slot-available {
+    border-color: rgba(0, 255, 0, 0.3);
+}
+
+.slot-card.slot-full {
+    border-color: rgba(255, 0, 0, 0.3);
+    opacity: 0.7;
+}
+
+.slot-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.slot-time {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.slot-time i {
+    font-size: 1.5rem;
+    color: #ff00ff;
+}
+
+.slot-time h3 {
+    margin: 0;
+    font-size: 1.3rem;
+    color: white;
+}
+
+.status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.status-badge.available {
+    background: rgba(0, 255, 0, 0.2);
+    color: #00ff00;
+    border: 1px solid rgba(0, 255, 0, 0.3);
+}
+
+.status-badge.full {
+    background: rgba(255, 0, 0, 0.2);
+    color: #ff6b6b;
+    border: 1px solid rgba(255, 0, 0, 0.3);
+}
+
+.slot-details {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.detail-item i {
+    color: #ff00ff;
+    width: 20px;
+}
+
+.detail-item strong {
+    color: white;
+    font-weight: 600;
+}
+
+.slot-action {
+    margin-top: 1rem;
+}
+
+.modern-btn.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: rgba(128, 128, 128, 0.3);
+}
+
+@media (max-width: 768px) {
+    .slots-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .slot-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+}
+</style>
+{% endblock %}

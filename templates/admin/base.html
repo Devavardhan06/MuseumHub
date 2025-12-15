@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Admin Portal - MuseumHub{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .admin-sidebar {
+            width: 250px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+            min-height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            padding: 2rem 0;
+        }
+        .admin-content {
+            margin-left: 250px;
+            padding: 2rem;
+        }
+        .admin-nav-item {
+            padding: 1rem 2rem;
+            color: white;
+            text-decoration: none;
+            display: block;
+            transition: all 0.3s;
+        }
+        .admin-nav-item:hover, .admin-nav-item.active {
+            background: rgba(255, 0, 255, 0.3);
+            border-left: 4px solid #ff00ff;
+        }
+        .admin-header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 2rem;
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="admin-sidebar">
+        <div style="padding: 1rem 2rem; border-bottom: 1px solid rgba(255,255,255,0.2);">
+            <h2 style="color: white; margin: 0;"><i class="fas fa-shield-alt"></i> Admin Portal</h2>
+        </div>
+        <nav>
+            <a href="{{ url_for('admin.dashboard') }}" class="admin-nav-item {% if request.endpoint == 'admin.dashboard' %}active{% endif %}">
+                <i class="fas fa-chart-line"></i> Dashboard
+            </a>
+            <a href="{{ url_for('admin.bookings') }}" class="admin-nav-item {% if request.endpoint == 'admin.bookings' %}active{% endif %}">
+                <i class="fas fa-ticket-alt"></i> Bookings
+            </a>
+            <a href="{{ url_for('admin.conversations') }}" class="admin-nav-item {% if request.endpoint == 'admin.conversations' %}active{% endif %}">
+                <i class="fas fa-comments"></i> Conversations
+            </a>
+            <a href="{{ url_for('admin.channels') }}" class="admin-nav-item {% if request.endpoint == 'admin.channels' %}active{% endif %}">
+                <i class="fas fa-broadcast-tower"></i> Channels
+            </a>
+            <a href="{{ url_for('admin.content') }}" class="admin-nav-item {% if request.endpoint == 'admin.content' %}active{% endif %}">
+                <i class="fas fa-book"></i> Knowledge Base
+            </a>
+            <a href="{{ url_for('admin.escalations') }}" class="admin-nav-item {% if request.endpoint == 'admin.escalations' %}active{% endif %}">
+                <i class="fas fa-exclamation-triangle"></i> Escalations
+            </a>
+            <a href="{{ url_for('admin.analytics') }}" class="admin-nav-item {% if request.endpoint == 'admin.analytics' %}active{% endif %}">
+                <i class="fas fa-chart-bar"></i> Analytics
+            </a>
+            <a href="{{ url_for('admin.backups') }}" class="admin-nav-item {% if request.endpoint == 'admin.backups' %}active{% endif %}">
+                <i class="fas fa-database"></i> Backups
+            </a>
+            <a href="{{ url_for('admin.users') }}" class="admin-nav-item {% if request.endpoint == 'admin.users' %}active{% endif %}">
+                <i class="fas fa-users"></i> Users
+            </a>
+            <a href="{{ url_for('home') }}" class="admin-nav-item">
+                <i class="fas fa-home"></i> Back to Site
+            </a>
+        </nav>
+    </div>
+    
+    <div class="admin-content">
+        <div class="admin-header">
+            <h1>{% block page_title %}Admin Portal{% endblock %}</h1>
+        </div>
+        
+        {% block content %}{% endblock %}
+    </div>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
+

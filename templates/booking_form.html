@@ -1,0 +1,312 @@
+{% extends "base.html" %}
+
+{% block title %}Book Ticket - MuseumHub{% endblock %}
+
+{% block content %}
+<div class="modern-container">
+    <div class="page-header">
+        <h2><i class="fas fa-ticket-alt"></i> Book Your Ticket</h2>
+        <p class="subtitle">Complete your booking details</p>
+    </div>
+
+    {% if error %}
+    <div class="alert alert-error">
+        <i class="fas fa-exclamation-circle"></i> 
+        {% if error == 'missing_date_or_slot' %}
+            Please select both date and time slot.
+        {% elif error == 'invalid_date_format' %}
+            Invalid date format. Please select a valid date.
+        {% elif error == 'invalid_time_slot' %}
+            Invalid time slot selected.
+        {% elif error == 'slot_full_or_not_enough_capacity' %}
+            This slot is full or doesn't have enough capacity. Please choose another slot.
+        {% else %}
+            {{ error }}
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <div class="booking-form-container">
+        <div class="form-card">
+            <form method="post" action="{{ url_for('book_ticket') }}" class="booking-form">
+                <div class="form-group">
+                    <label for="date" class="form-label">
+                        <i class="fas fa-calendar"></i> Select Date
+                    </label>
+                    <input type="date" 
+                           id="date" 
+                           name="date" 
+                           value="{{ date }}" 
+                           class="form-input"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label for="time_slot" class="form-label">
+                        <i class="fas fa-clock"></i> Select Time Slot
+                    </label>
+                    <select id="time_slot" name="time_slot" class="form-input" required>
+                        <option value="">Choose a time slot...</option>
+                        {% for s in slots %}
+                        <option value="{{ s }}" {% if s==time_slot %}selected{% endif %}>
+                            {{ s }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="visitors" class="form-label">
+                        <i class="fas fa-users"></i> Number of Visitors
+                    </label>
+                    <input type="number" 
+                           id="visitors" 
+                           name="visitors" 
+                           value="{{ visitors }}" 
+                           min="1" 
+                           max="10"
+                           class="form-input"
+                           required>
+                    <small class="form-help">Maximum 10 visitors per booking</small>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="modern-btn primary">
+                        <i class="fas fa-check-circle"></i> Confirm Booking
+                    </button>
+                    <a href="{{ url_for('day_view') }}?date={{ date }}" class="modern-btn secondary">
+                        <i class="fas fa-arrow-left"></i> Back to Slots
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <div class="booking-info-card">
+            <h3><i class="fas fa-info-circle"></i> Booking Information</h3>
+            <div class="info-list">
+                <div class="info-item">
+                    <i class="fas fa-dollar-sign"></i>
+                    <div>
+                        <strong>Price per Visitor:</strong>
+                        <span>$100.00 USD</span>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-clock"></i>
+                    <div>
+                        <strong>Time Slots Available:</strong>
+                        <span>6 slots daily</span>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-calendar-check"></i>
+                    <div>
+                        <strong>Booking Policy:</strong>
+                        <span>Bookings can be cancelled within 48 hours</span>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-credit-card"></i>
+                    <div>
+                        <strong>Payment Options:</strong>
+                        <span>Pay online or cash at museum</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.modern-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.page-header h2 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.subtitle {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.1rem;
+}
+
+.alert {
+    padding: 1rem 1.5rem;
+    border-radius: 10px;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.alert-error {
+    background: rgba(255, 0, 0, 0.2);
+    border: 1px solid rgba(255, 0, 0, 0.3);
+    color: #ff6b6b;
+}
+
+.booking-form-container {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+}
+
+.form-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 2.5rem;
+}
+
+.booking-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: white;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.form-label i {
+    color: #ff00ff;
+}
+
+.form-input {
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    color: white;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #ff00ff;
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 20px rgba(255, 0, 255, 0.3);
+}
+
+.form-input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.form-help {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+    margin-top: 0.25rem;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+}
+
+.form-actions .modern-btn {
+    flex: 1;
+    min-width: 150px;
+}
+
+.booking-info-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 2rem;
+    height: fit-content;
+    position: sticky;
+    top: 2rem;
+}
+
+.booking-info-card h3 {
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.info-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.info-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.info-item i {
+    color: #ff00ff;
+    font-size: 1.3rem;
+    margin-top: 0.25rem;
+}
+
+.info-item div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    flex: 1;
+}
+
+.info-item strong {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.9rem;
+}
+
+.info-item span {
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+@media (max-width: 968px) {
+    .booking-form-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .booking-info-card {
+        position: static;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .form-actions .modern-btn {
+        width: 100%;
+    }
+}
+</style>
+{% endblock %}

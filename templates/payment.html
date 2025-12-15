@@ -1,20 +1,448 @@
 {% extends "base.html" %}
 
-{% block title %}Payment - Ticket Booking System{% endblock %}
+{% block title %}Payment - MuseumHub{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h2>Payment</h2>
-    <form action="{{ url_for('payment', ticket_id=ticket_id) }}" method="POST" id="payment-form">
-        <div class="form-group">
-            <label for="payment_method_id">Payment Method ID</label>
-            <input type="text" id="payment_method_id" name="payment_method_id" class="form-control" required>
+<div class="modern-container">
+    <div class="payment-header">
+        <h2><i class="fas fa-credit-card"></i> Complete Your Booking</h2>
+        <p class="subtitle">Choose your preferred payment method</p>
+    </div>
+
+    {% if error %}
+    <div class="alert alert-error">
+        <i class="fas fa-exclamation-circle"></i> {{ error }}
+    </div>
+    {% endif %}
+
+    <div class="payment-container">
+        <div class="payment-summary">
+            <h3><i class="fas fa-ticket-alt"></i> Booking Summary</h3>
+            <div class="summary-details">
+                <div class="detail-row">
+                    <span class="label">Booking ID:</span>
+                    <span class="value">#{{ booking.id }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Date:</span>
+                    <span class="value">{{ booking.date.strftime('%B %d, %Y') }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Time Slot:</span>
+                    <span class="value">{{ booking.time_slot }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Visitors:</span>
+                    <span class="value">{{ booking.visitors }} {{ 'person' if booking.visitors == 1 else 'people' }}</span>
+                </div>
+                <div class="detail-row total">
+                    <span class="label">Total Amount:</span>
+                    <span class="value">${{ "%.2f"|format(amount) }} {{ booking.currency or 'USD' }}</span>
+                </div>
+            </div>
         </div>
-        <button type="submit" class="btn btn-primary">Pay</button>
-    </form>
-    <script src="https://js.stripe.com/v3/"></script>
-    <script>
-        // Stripe payment handling script
-    </script>
+
+        <div class="payment-form-container">
+            <div class="payment-options">
+                <h3><i class="fas fa-credit-card"></i> Choose Payment Method</h3>
+                
+                <!-- Pay Now Option -->
+                <div class="payment-option-card active" id="pay-now-option">
+                    <div class="option-header">
+                        <input type="radio" name="payment_option" value="pay_now" id="pay_now" checked>
+                        <label for="pay_now">
+                            <i class="fas fa-credit-card"></i>
+                            <span>Pay Now (Online)</span>
+                        </label>
+                    </div>
+                    <div class="option-content" id="pay-now-content">
+                        <form id="payment-form">
+                            <div id="card-element" class="card-element">
+                                <!-- Stripe Elements will create form elements here -->
+                            </div>
+                            <div id="card-errors" role="alert" class="card-errors"></div>
+                            <button type="submit" id="submit-button" class="modern-btn primary payment-btn">
+                                <span id="button-text">
+                                    <i class="fas fa-lock"></i> Pay ${{ "%.2f"|format(amount) }}
+                                </span>
+                                <span id="spinner" class="spinner" style="display: none;">
+                                    <i class="fas fa-spinner fa-spin"></i> Processing...
+                                </span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Pay Later Option -->
+                <div class="payment-option-card" id="pay-later-option">
+                    <div class="option-header">
+                        <input type="radio" name="payment_option" value="pay_later" id="pay_later">
+                        <label for="pay_later">
+                            <i class="fas fa-money-bill-wave"></i>
+                            <span>Pay Later (Cash at Museum)</span>
+                        </label>
+                    </div>
+                    <div class="option-content" id="pay-later-content" style="display: none;">
+                        <div class="pay-later-info">
+                            <p><i class="fas fa-info-circle"></i> You can pay with cash when you visit the museum.</p>
+                            <p><strong>Amount to pay:</strong> ${{ "%.2f"|format(amount) }} {{ booking.currency or 'USD' }}</p>
+                            <p><i class="fas fa-calendar-check"></i> Please bring exact change or cash for your visit.</p>
+                        </div>
+                        <form method="post" action="{{ url_for('payment', booking_id=booking.id) }}" id="pay-later-form">
+                            <input type="hidden" name="payment_option" value="pay_later">
+                            <button type="submit" class="modern-btn secondary payment-btn">
+                                <i class="fas fa-check-circle"></i> Confirm Pay Later
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="payment-security">
+        <p><i class="fas fa-shield-alt"></i> Your payment is secure and encrypted</p>
+    </div>
 </div>
+
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+    const stripe = Stripe('{{ stripe_public_key }}');
+    const bookingId = {{ booking.id }};
+    const amount = {{ amount }};
+    
+    // Handle payment option selection
+    document.querySelectorAll('input[name="payment_option"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            const payNowContent = document.getElementById('pay-now-content');
+            const payLaterContent = document.getElementById('pay-later-content');
+            const payNowOption = document.getElementById('pay-now-option');
+            const payLaterOption = document.getElementById('pay-later-option');
+            
+            if (this.value === 'pay_now') {
+                payNowContent.style.display = 'block';
+                payLaterContent.style.display = 'none';
+                payNowOption.classList.add('active');
+                payLaterOption.classList.remove('active');
+            } else {
+                payNowContent.style.display = 'none';
+                payLaterContent.style.display = 'block';
+                payNowOption.classList.remove('active');
+                payLaterOption.classList.add('active');
+            }
+        });
+    });
+
+    let cardElement = null;
+    let paymentIntentClientSecret = null;
+
+    // Initialize Stripe payment when "Pay Now" is selected
+    function initializeStripePayment() {
+        if (paymentIntentClientSecret) {
+            return; // Already initialized
+        }
+
+        fetch('/create-payment-intent/' + bookingId, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                document.getElementById('card-errors').textContent = data.error;
+                return;
+            }
+
+            paymentIntentClientSecret = data.clientSecret;
+
+            const elements = stripe.elements();
+            cardElement = elements.create('card', {
+                style: {
+                    base: {
+                        fontSize: '16px',
+                        color: '#ffffff',
+                        '::placeholder': {
+                            color: '#aab7c4',
+                        },
+                    },
+                    invalid: {
+                        color: '#fa755a',
+                    },
+                },
+            });
+
+            cardElement.mount('#card-element');
+
+            cardElement.on('change', function(event) {
+                const displayError = document.getElementById('card-errors');
+                if (event.error) {
+                    displayError.textContent = event.error.message;
+                } else {
+                    displayError.textContent = '';
+                }
+            });
+
+            const form = document.getElementById('payment-form');
+            form.addEventListener('submit', async function(event) {
+                event.preventDefault();
+
+                const submitButton = document.getElementById('submit-button');
+                const buttonText = document.getElementById('button-text');
+                const spinner = document.getElementById('spinner');
+                
+                submitButton.disabled = true;
+                buttonText.style.display = 'none';
+                spinner.style.display = 'inline-block';
+
+                const {error, paymentIntent} = await stripe.confirmCardPayment(
+                    paymentIntentClientSecret,
+                    {
+                        payment_method: {
+                            card: cardElement,
+                        }
+                    }
+                );
+
+                if (error) {
+                    document.getElementById('card-errors').textContent = error.message;
+                    submitButton.disabled = false;
+                    buttonText.style.display = 'inline-block';
+                    spinner.style.display = 'none';
+                } else if (paymentIntent.status === 'succeeded') {
+                    // Redirect to success page
+                    window.location.href = '/payment-success/' + bookingId;
+                }
+            });
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById('card-errors').textContent = 'An error occurred. Please try again.';
+        });
+    }
+
+    // Initialize Stripe when page loads if "Pay Now" is selected
+    if (document.getElementById('pay_now').checked) {
+        initializeStripePayment();
+    }
+
+    // Re-initialize when switching to "Pay Now"
+    document.getElementById('pay_now').addEventListener('change', function() {
+        if (this.checked && !paymentIntentClientSecret) {
+            initializeStripePayment();
+        }
+    });
+</script>
+
+<style>
+.modern-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.payment-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.payment-header h2 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.subtitle {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.1rem;
+}
+
+.alert {
+    padding: 1rem;
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
+}
+
+.alert-error {
+    background: rgba(255, 0, 0, 0.2);
+    border: 1px solid rgba(255, 0, 0, 0.3);
+    color: #ff6b6b;
+}
+
+.payment-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.payment-summary {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 2rem;
+}
+
+.payment-summary h3 {
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+}
+
+.summary-details {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.detail-row.total {
+    border-top: 2px solid rgba(255, 255, 255, 0.3);
+    border-bottom: none;
+    padding-top: 1rem;
+    margin-top: 0.5rem;
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.detail-row .label {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.detail-row .value {
+    color: white;
+    font-weight: 600;
+}
+
+.payment-form-container {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 2rem;
+}
+
+.payment-options h3 {
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    text-align: center;
+}
+
+.payment-option-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.payment-option-card.active {
+    border-color: #ff00ff;
+    background: rgba(255, 0, 255, 0.1);
+}
+
+.option-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.option-header input[type="radio"] {
+    margin-right: 1rem;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.option-header label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: white;
+    flex: 1;
+}
+
+.option-header label i {
+    font-size: 1.3rem;
+    color: #ff00ff;
+}
+
+.option-content {
+    margin-top: 1rem;
+}
+
+.pay-later-info {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.pay-later-info p {
+    margin: 0.75rem 0;
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.6;
+}
+
+.pay-later-info i {
+    color: #ffa500;
+    margin-right: 0.5rem;
+}
+
+.pay-later-info strong {
+    color: white;
+}
+
+.card-element {
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    margin-bottom: 1rem;
+}
+
+.card-errors {
+    color: #ff6b6b;
+    margin-bottom: 1rem;
+    min-height: 20px;
+}
+
+.payment-btn {
+    width: 100%;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    margin-top: 1rem;
+}
+
+.payment-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.spinner {
+    display: inline-block;
+}
+
+.payment-security {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.7);
+    margin-top: 2rem;
+}
+
+@media (max-width: 768px) {
+    .payment-container {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
 {% endblock %}

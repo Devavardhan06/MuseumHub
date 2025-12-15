@@ -84,10 +84,28 @@
                 </a>
                 
                 {% if 'user_id' in session %}
-                    <a href="{{ url_for('my_tickets') }}" class="nav-link">
+                    <a href="{{ url_for('my_bookings') }}" class="nav-link">
                         <i class="fas fa-ticket-alt"></i>
                         <span>My Tickets</span>
                     </a>
+                    <a href="{{ url_for('chat_api_page') }}" class="nav-link">
+                        <i class="fas fa-comments"></i>
+                        <span>Chat API</span>
+                    </a>
+                    <a href="{{ url_for('instagram_page') }}" class="nav-link">
+                        <i class="fab fa-instagram"></i>
+                        <span>Instagram</span>
+                    </a>
+                    <a href="{{ url_for('voice_page') }}" class="nav-link">
+                        <i class="fas fa-microphone"></i>
+                        <span>Voice</span>
+                    </a>
+                    {% if session.get('is_admin', False) %}
+                        <a href="{{ url_for('admin_portal_page') }}" class="nav-link" style="background: rgba(255, 0, 255, 0.3); border: 1px solid rgba(255, 0, 255, 0.5);">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Admin</span>
+                        </a>
+                    {% endif %}
                     <a href="{{ url_for('logout') }}" class="nav-link logout">
                         <i class="fas fa-sign-out-alt"></i>
                         <span>Logout</span>
@@ -147,9 +165,60 @@
         </div>
     </footer>
 
+    <!-- Floating Chatbot Widget -->
+    <div id="chatbot-widget" class="chatbot-widget">
+        <div id="chatbot-button" class="chatbot-button">
+            <i class="fas fa-comments"></i>
+            <span class="chatbot-badge">1</span>
+        </div>
+        <div id="chatbot-window" class="chatbot-window" style="display: none;">
+            <div class="chatbot-header">
+                <h3><i class="fas fa-robot"></i> MuseumHub Assistant</h3>
+                <button id="chatbot-close" class="chatbot-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="chatbot-messages" class="chatbot-messages">
+                <div class="message bot">
+                    👋 Hello! I'm your MuseumHub assistant. I can help you with:
+                    <br>• Booking tickets
+                    <br>• Information about exhibits
+                    <br>• Time slots and availability
+                    <br>• Museum policies
+                    <br><br>What would you like to know?
+                </div>
+                <div class="chatbot-buttons suggestions" style="margin-top: 1rem;">
+                    <button class="chatbot-button" data-action="start_booking" style="margin-bottom: 0.5rem;">
+                        🎫 Book a Ticket
+                    </button>
+                    <button class="chatbot-button" data-action="check_availability" data-value="tomorrow" style="margin-bottom: 0.5rem;">
+                        📅 Check Availability
+                    </button>
+                    <button class="chatbot-button" data-action="help">
+                        ❓ Get Help
+                    </button>
+                </div>
+            </div>
+            <form id="chatbot-form" class="chatbot-input-form">
+                <button type="button" id="chatbot-voice-btn" class="chatbot-voice-btn" title="Voice Input">
+                    <i class="fas fa-microphone"></i>
+                </button>
+                <input type="text" id="chatbot-input" placeholder="Type your message or use voice..." autocomplete="off" required />
+                <button type="submit" class="chatbot-send-btn">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </form>
+            <div id="voice-recording-indicator" class="voice-recording-indicator" style="display: none;">
+                <div class="pulse-dot"></div>
+                <span>Recording... Release to send</span>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="{{ url_for('static', filename='js/animations.js') }}"></script>
     <script src="{{ url_for('static', filename='js/navigation.js') }}"></script>
     <script src="{{ url_for('static', filename='js/3d-background.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
 </body>
 </html>

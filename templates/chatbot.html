@@ -3,42 +3,142 @@
 {% block title %}AI Chatbot - MuseumHub{% endblock %}
 
 {% block content %}
-<div class="chatbot-container">
-    <h2 class="mb-3"><i class="fas fa-robot"></i> AI Chatbot</h2>
-    <div id="chat-messages" class="chat-messages"></div>
-    <form id="chat-form" class="chat-input" autocomplete="off">
-        <input type="text" id="user-input" placeholder="Type your message..." autocomplete="off" required />
-        <button type="submit" class="modern-btn primary"><i class="fas fa-paper-plane"></i></button>
+<div class="chatbot-container" style="max-width: 900px; margin: 2rem auto; padding: 2rem;">
+    <h2 class="mb-3" style="color: white; text-align: center;">
+        <i class="fas fa-robot"></i> AI Chatbot Assistant
+    </h2>
+    <div id="chat-messages" class="chat-messages" style="
+        height: 500px;
+        overflow-y: auto;
+        padding: 1rem;
+        background: #1a1a2e;
+        border: 2px solid #0066ff;
+        border-radius: 20px;
+        margin-bottom: 1rem;
+    ">
+        <div class="message bot">
+            👋 Hello! I'm your MuseumHub assistant. I can help you with:
+            <br>• Booking tickets
+            <br>• Information about exhibits
+            <br>• Time slots and availability
+            <br>• Museum policies
+            <br><br>What would you like to know?
+        </div>
+        <div class="chatbot-buttons suggestions" style="margin-top: 1rem;">
+            <button class="chatbot-button" data-action="start_booking" style="margin-bottom: 0.5rem;">
+                🎫 Book a Ticket
+            </button>
+            <button class="chatbot-button" data-action="check_availability" data-value="tomorrow" style="margin-bottom: 0.5rem;">
+                📅 Check Availability
+            </button>
+            <button class="chatbot-button" data-action="help">
+                ❓ Get Help
+            </button>
+        </div>
+    </div>
+    <form id="chat-form" class="chat-input" autocomplete="off" style="
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    ">
+        <input type="text" id="user-input" placeholder="Type your message..." autocomplete="off" required style="
+            flex: 1;
+            padding: 1rem;
+            border: 2px solid #0066ff;
+            border-radius: 25px;
+            background: #1a1a2e;
+            color: #ffffff;
+        " />
+        <button type="submit" class="modern-btn primary" style="
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 25px;
+            background: linear-gradient(45deg, #0066ff, #0052cc);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 102, 255, 0.3);
+        ">
+            <i class="fas fa-paper-plane"></i>
+        </button>
     </form>
 </div>
-<script>
-// Simple AJAX chat logic
-const chatForm = document.getElementById('chat-form');
-const chatMessages = document.getElementById('chat-messages');
 
-function appendMessage(text, sender) {
-    const msg = document.createElement('div');
-    msg.className = 'message ' + sender;
-    msg.innerText = text;
-    chatMessages.appendChild(msg);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
+<style>
+.chatbot-container .chat-messages .message {
+    padding: 0.75rem 1rem;
+    border-radius: 15px;
+    max-width: 85%;
+    word-wrap: break-word;
+    animation: messageSlide 0.3s ease-out;
+    line-height: 1.5;
+    color: white;
 }
 
-chatForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const input = document.getElementById('user-input');
-    const userText = input.value;
-    appendMessage(userText, 'user');
-    input.value = '';
-    appendMessage('...', 'bot');
-    const response = await fetch('/chatbot', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: userText })
-    });
-    const data = await response.json();
-    chatMessages.lastChild.remove();
-    appendMessage(data.response, 'bot');
-});
-</script>
+.chatbot-container .chat-messages .message.user {
+    background: linear-gradient(45deg, #0066ff, #0052cc);
+    margin-left: auto;
+    box-shadow: 0 5px 15px rgba(0, 102, 255, 0.3);
+    color: white;
+}
+
+.chatbot-container .chat-messages .message.bot {
+    background: #16213e;
+    border: 1px solid #0066ff;
+    box-shadow: 0 5px 15px rgba(0, 102, 255, 0.2);
+    color: #ffffff;
+}
+
+.chatbot-container .chat-messages .message.bot.typing {
+    background: #16213e;
+    border: 1px solid rgba(0, 102, 255, 0.3);
+    color: #ffffff;
+    font-style: italic;
+}
+
+.chatbot-container .chat-messages .message.bot.error {
+    background: #3d1a1a;
+    border: 1px solid #ff3333;
+    color: #ffffff;
+}
+
+.chatbot-container .chatbot-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #0066ff;
+}
+
+.chatbot-container .chatbot-button {
+    padding: 0.75rem 1.25rem;
+    background: #16213e;
+    border: 2px solid #0066ff;
+    border-radius: 12px;
+    color: #ffffff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    text-align: left;
+}
+
+.chatbot-container .chatbot-button:hover {
+    background: #1a1a2e;
+    border-color: #0080ff;
+    transform: translateX(5px);
+    box-shadow: 0 5px 15px rgba(0, 102, 255, 0.4);
+}
+
+@keyframes messageSlide {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+</style>
 {% endblock %}

@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block title %}Payment Success - MuseumHub{% endblock %}
+
+{% block content %}
+<div class="modern-container">
+    <div class="success-container">
+        <div class="success-icon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <h1>Payment Successful!</h1>
+        <p class="success-message">Your booking has been confirmed and payment has been processed.</p>
+
+        <div class="booking-details-card">
+            <h3><i class="fas fa-ticket-alt"></i> Booking Details</h3>
+            <div class="details-grid">
+                <div class="detail-item">
+                    <span class="detail-label">Booking ID</span>
+                    <span class="detail-value">#{{ booking.id }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Date</span>
+                    <span class="detail-value">{{ booking.date.strftime('%B %d, %Y') }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Time Slot</span>
+                    <span class="detail-value">{{ booking.time_slot }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Visitors</span>
+                    <span class="detail-value">{{ booking.visitors }} {{ 'person' if booking.visitors == 1 else 'people' }}</span>
+                </div>
+                {% if booking.amount %}
+                <div class="detail-item">
+                    <span class="detail-label">Amount Paid</span>
+                    <span class="detail-value">${{ "%.2f"|format(booking.amount) }} {{ booking.currency or 'USD' }}</span>
+                </div>
+                {% endif %}
+                {% if booking.transaction_id %}
+                <div class="detail-item">
+                    <span class="detail-label">Transaction ID</span>
+                    <span class="detail-value">{{ booking.transaction_id }}</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <a href="{{ url_for('my_bookings') }}" class="modern-btn primary">
+                <i class="fas fa-ticket-alt"></i> View My Tickets
+            </a>
+            <a href="{{ url_for('home') }}" class="modern-btn secondary">
+                <i class="fas fa-home"></i> Back to Home
+            </a>
+        </div>
+
+        <div class="info-box">
+            <p><i class="fas fa-info-circle"></i> A confirmation email will be sent to your registered email address.</p>
+            <p><i class="fas fa-calendar-check"></i> Please arrive on time for your selected time slot.</p>
+        </div>
+    </div>
+</div>
+
+<style>
+.modern-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.success-container {
+    text-align: center;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 3rem 2rem;
+}
+
+.success-icon {
+    font-size: 5rem;
+    color: #00ff00;
+    margin-bottom: 1.5rem;
+    animation: scaleIn 0.5s ease-out;
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.success-container h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.success-message {
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 2rem;
+}
+
+.booking-details-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 2rem;
+    margin: 2rem 0;
+    text-align: left;
+}
+
+.booking-details-card h3 {
+    margin-bottom: 1.5rem;
+    text-align: center;
+    font-size: 1.5rem;
+}
+
+.details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.detail-label {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.detail-value {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: white;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin: 2rem 0;
+    flex-wrap: wrap;
+}
+
+.info-box {
+    background: rgba(0, 255, 0, 0.1);
+    border: 1px solid rgba(0, 255, 0, 0.3);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-top: 2rem;
+    text-align: left;
+}
+
+.info-box p {
+    margin: 0.5rem 0;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+@media (max-width: 768px) {
+    .details-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+    
+    .action-buttons .modern-btn {
+        width: 100%;
+    }
+}
+</style>
+{% endblock %}
+
